@@ -1,196 +1,110 @@
-# Full Stack Cafe Management System
+# CafeFlow - Cafe Management System
 
-A comprehensive full-stack application designed to manage cafes, customer orders, courier operations, and geolocation-based services. This project demonstrates a strong backend architecture with a modern frontend interface.
+CafeFlow is a full-stack cafe ordering and delivery management project. The repository is organized as a clean monorepo with a Spring Boot backend, a React frontend, and the existing mobile prototype kept separately.
 
----
+## Repository Layout
 
-## Features
-
-### Backend
-- **Spring Boot Framework**
-- Role-based access control (Client, Cafe, Courier)
-- REST API implementation for:
-  - User registration and login
-  - Order creation and management
-  - Geolocation services
-- **Database Management**:
-  - Relational database schema for PostgreSQL/MySQL
-  - Efficient data handling for orders, users, cafes, and menu items
-- **Security**:
-  - JWT-based authentication
-  - Password hashing with BCrypt
-
-### Frontend
-- **React-based interface**
-- Responsive design for clients, cafes, and couriers
-- Real-time updates on order status
-- Integration with geolocation services for cafe and courier functionality
-
----
-
-## Prerequisites
-
-### Tools and Technologies
-- **Java 17+**
-- **Spring Boot**
-- **PostgreSQL/MySQL**
-- **React** (Frontend framework)
-- **Node.js and npm**
-- External APIs:
-  - Overpass API
-  - Nominatim API
-
-### Environment Variables
-Ensure the following variables are configured:
-
-```plaintext
-# Database Configuration
-DB_URL=jdbc:postgresql://localhost:5432/cafeapp
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-
-# JWT Secret
-JWT_SECRET=your_secret_key
-
-# External API Endpoints
-OVERPASS_API_URL=https://overpass-api.de/api/interpreter
-NOMINATIM_API_URL=https://nominatim.openstreetmap.org
+```text
+backend/   Spring Boot API, security, order flow, cafe administration, geolocation
+frontend/  React app with separate client, courier, and cafe portals
+mobile/    Flutter mobile prototype from the original repository
 ```
 
----
+## Main Features
 
-## Additional Setup Requirements
+- Role-based authentication for clients, couriers, and cafe managers.
+- JWT-secured Spring Boot REST API.
+- Order creation, order history, cafe order management, and courier delivery workflow.
+- Cafe menu and district management.
+- Address and geolocation helpers for matching orders to cafe coverage areas.
+- Three frontend portal modes from the same React codebase:
+  - client portal on port `3000`
+  - courier portal on port `3001`
+  - cafe portal on port `3002`
 
-1. **Create Polygon Requests for Cafe Regions**:
-   - Use the Overpass API to define polygon boundaries for cafe regions.
-   - Ensure polygons are properly saved in the database to allow geolocation-based queries.
+## Tech Stack
 
-2. **Add Cafe and Menu Items**:
-   - Populate the `cafes` table with the initial cafe data, including name, email, and associated regions.
-   - Populate the `menu_items` table with dishes offered by each cafe.
+- Java 21
+- Spring Boot 3.1
+- Spring Security
+- Spring Data JPA
+- MySQL
+- React 18
+- React Router
+- Axios
+- Leaflet
 
-3. **Modify Access File**:
-   - Update `application.properties` or your environment file to reflect the correct database connection details and API URLs.
+## Backend Setup
 
----
+```powershell
+cd backend
+```
 
-## Installation
+Set local environment variables before running the backend. Keep real secrets outside git.
 
-### Backend
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/YevheniiSatov/full-stack-cafe-app.git
-   cd full-stack-cafe-app/backend
-   ```
-2. Configure the `application.properties` file:
-   ```properties
-   spring.datasource.url=${DB_URL}
-   spring.datasource.username=${DB_USERNAME}
-   spring.datasource.password=${DB_PASSWORD}
-   spring.jpa.hibernate.ddl-auto=update
+```powershell
+$env:SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/cafeapp"
+$env:SPRING_DATASOURCE_USERNAME="cafeappuser"
+$env:SPRING_DATASOURCE_PASSWORD="your-local-password"
+$env:CAFEAPP_JWT_SECRET="replace-with-a-long-random-secret"
+.\gradlew.bat bootRun
+```
 
-   jwt.secret=${JWT_SECRET}
-   overpass.api.url=${OVERPASS_API_URL}
-   nominatim.api.url=${NOMINATIM_API_URL}
-   ```
-3. Build and run the backend:
-   ```bash
-   mvn clean install
-   java -jar target/cafe-app-0.0.1-SNAPSHOT.jar
-   ```
+The backend runs on `http://localhost:8080` by default.
 
-### Frontend
-1. Navigate to the frontend directory:
-   ```bash
-   cd ../frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm start
-   ```
+## Frontend Setup
 
----
+```powershell
+cd frontend
+npm install
+```
 
-## API Endpoints
+Run one portal:
 
-### Authentication
-- **POST /api/auth/register** - Register a new user
-- **POST /api/auth/login** - Login an existing user
+```powershell
+npm run start:user
+npm run start:courier
+npm run start:cafe
+```
 
-### Orders
-- **POST /api/orders** - Place an order
-- **GET /api/cafe/orders** - Get orders for a cafe
-- **POST /api/cafe/orders/{id}/accept** - Accept an order by a cafe
-- **GET /api/courier/orders** - View orders for couriers
+Run all portals together:
 
-### Geolocation
-- **POST /api/geo/location** - Get nearest cafe by location
-- **POST /api/geo/address** - Get nearest cafe by address
+```powershell
+npm run start:all
+```
 
----
+The React app reads the API URL from `REACT_APP_API_BASE_URL`; the scripts default it to `http://localhost:8080`.
 
-The database consists of the following tables:
+## Useful Commands
 
-1. **`user`**:
-   - Stores user details such as email, password, role (Client, Cafe, Courier), etc.
-   - Fields:
-     - `id` (Primary Key)
-     - `email`, `name`, `password`, `role`
+```powershell
+# Backend
+cd backend
+.\gradlew.bat test
 
-2. **`cafe`**:
-   - Stores cafe-specific information.
-   - Fields:
-     - `id` (Primary Key)
-     - `email`, `name`
-     - `user_id` (Foreign Key referencing `user.id`)
+# Frontend
+cd frontend
+npm run build
+```
 
-3. **`district`**:
-   - Contains district boundaries for geolocation lookups.
-   - Fields:
-     - `id` (Primary Key)
-     - `osm_id`, `name`, `boundary` (Geometry type)
+## API Areas
 
-4. **`menu_item`**:
-   - Stores menu items offered by cafes.
-   - Fields:
-     - `id` (Primary Key)
-     - `name`, `price`
-     - `cafe_id` (Foreign Key referencing `cafe.id`)
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/register-courier`
+- `POST /api/auth/login-courier`
+- `POST /api/auth/register-cafe`
+- `POST /api/auth/login-cafe`
+- `/api/orders/**`
+- `/api/cafe/**`
+- `/api/courier/**`
+- `/api/menu/**`
+- `/api/geo/**`
 
-5. **`orders`**:
-   - Contains customer orders.
-   - Fields:
-     - `id` (Primary Key)
-     - `client_name`, `client_phone`, `address`, `latitude`, `longitude`
-     - `status` (Pending, Accepted, Delivered)
-     - `user_id` (Foreign Key referencing `user.id`)
-     - `courier_email`, `client_email`
-     - `assigned_courier`, `assigned_cafe`
+## Configuration Notes
 
-6. **`order_item`**:
-   - Represents items within an order.
-   - Fields:
-     - `id` (Primary Key)
-     - `quantity`
-     - `menu_item_id` (Foreign Key referencing `menu_item.id`)
-     - `order_id` (Foreign Key referencing `orders.id`)
----
-
-## Contribution
-Contributions are welcome! Please submit a pull request or create an issue for any improvements or fixes.
-
----
+The committed backend configuration uses environment-variable placeholders for database credentials and JWT secrets. Do not commit local `application-local.properties`, `.env` files, uploaded files, build outputs, IDE metadata, archives, or `node_modules`.
 
 ## Author
-**Yevhenii Shatov**  
-Backend and Full-Stack Developer  
-[GitHub Profile](https://github.com/YevheniiSatov)
 
----
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+Yevhenii Shatov

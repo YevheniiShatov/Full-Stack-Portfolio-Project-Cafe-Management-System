@@ -1,0 +1,55 @@
+{
+  "name": "cafeapp-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
+    "moment": "^2.30.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-leaflet-draw": "^0.20.0",
+    "react-router-dom": "^6.26.2",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "start:user": "cross-env PORT=3000 REACT_APP_PORTAL=user REACT_APP_API_BASE_URL=http://localhost:8080 react-scripts start",
+    "start:courier": "cross-env PORT=3001 REACT_APP_PORTAL=courier REACT_APP_API_BASE_URL=http://localhost:8080 react-scripts start",
+    "start:cafe": "cross-env PORT=3002 REACT_APP_PORTAL=cafe REACT_APP_API_BASE_URL=http://localhost:8080 react-scripts start",
+    "start:all": "concurrently \"npm run start:user\" \"npm run start:courier\" \"npm run start:cafe\"",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "concurrently": "^9.1.2",
+    "cross-env": "^10.1.0"
+  }
+}
