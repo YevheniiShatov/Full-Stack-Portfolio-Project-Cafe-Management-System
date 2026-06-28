@@ -2,6 +2,7 @@ package com.example.cafeapp.services;
 
 import com.example.cafeapp.dto.NominatimResponse;
 import com.example.cafeapp.entities.Cafe;
+import com.example.cafeapp.entities.District;
 import com.example.cafeapp.repositories.DistrictRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
@@ -157,6 +158,10 @@ public class GeoService {
             unique.putIfAbsent(cafe.getId(), cafe);
         }
         return new ArrayList<>(unique.values());
+    }
+
+    public List<District> findDistrictsByLocation(double lon, double lat) {
+        return districtRepository.findDistrictsByCoordinates(lon, lat);
     }
 
     private String normalizeAddress(String address) {

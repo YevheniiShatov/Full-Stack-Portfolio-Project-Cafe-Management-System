@@ -24,4 +24,18 @@
         """)
         List<Cafe> findCafesByCoordinates(@Param("lon") double lon,
                                           @Param("lat") double lat);
+
+        @Query("""
+        SELECT d
+        FROM District d
+        WHERE d.cafe IS NOT NULL
+          AND function('ST_Intersects',
+                       d.boundary,
+                       function('ST_GeomFromText',
+                                concat('POINT(', :lat, ' ', :lon, ')'),
+                                4326)
+                      ) = true
+        """)
+        List<District> findDistrictsByCoordinates(@Param("lon") double lon,
+                                                  @Param("lat") double lat);
     }

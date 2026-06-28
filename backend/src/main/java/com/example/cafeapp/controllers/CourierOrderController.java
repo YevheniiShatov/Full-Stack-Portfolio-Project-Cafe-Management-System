@@ -4,7 +4,7 @@ import com.example.cafeapp.dto.OrderMenuItemResponse;
 import com.example.cafeapp.dto.OrderResponse;
 import com.example.cafeapp.entities.Order;
 import com.example.cafeapp.services.OrderService;
-import com.example.cafeapp.utils.JwtUtils;
+import com.example.cafeapp.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class CourierOrderController {
     private OrderService orderService;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtService jwtService;
 
     // Available orders
     // Available orders for courier
@@ -27,7 +27,7 @@ public class CourierOrderController {
     public ResponseEntity<List<OrderResponse>> getCourierOrders(
             @RequestHeader("Authorization") String token) {
 
-        String email = jwtUtils.getUserNameFromJwtToken(token.replace("Bearer ", ""));
+        String email = jwtService.extractUsername(token.replace("Bearer ", ""));
 
         List<Order> orders = orderService.getOrdersForCourier();
 
@@ -57,7 +57,7 @@ public class CourierOrderController {
     public ResponseEntity<List<OrderResponse>> getMyCourierOrders(
             @RequestHeader("Authorization") String token) {
 
-        String email = jwtUtils.getUserNameFromJwtToken(token.replace("Bearer ", ""));
+        String email = jwtService.extractUsername(token.replace("Bearer ", ""));
 
         List<Order> orders = orderService.getOrdersAcceptedByCourier(email);
 
@@ -86,7 +86,7 @@ public class CourierOrderController {
     @PostMapping("/{orderId}/accept")
     public ResponseEntity<String> acceptOrder(@RequestHeader("Authorization") String token,
                                               @PathVariable Long orderId) {
-        String email = jwtUtils.getUserNameFromJwtToken(token.replace("Bearer ", ""));
+        String email = jwtService.extractUsername(token.replace("Bearer ", ""));
         orderService.acceptOrderByCourier(orderId, email);
         return ResponseEntity.ok("Order accepted successfully!");
     }

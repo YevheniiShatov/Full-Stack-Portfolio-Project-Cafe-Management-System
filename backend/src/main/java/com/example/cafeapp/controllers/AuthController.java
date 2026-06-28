@@ -5,7 +5,7 @@ import com.example.cafeapp.entities.Cafe;
 import com.example.cafeapp.entities.User;
 import com.example.cafeapp.entities.UserRole;
 import com.example.cafeapp.services.AuthService;
-import com.example.cafeapp.utils.JwtUtils;
+import com.example.cafeapp.services.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody RegisterRequest request) {
@@ -57,7 +57,7 @@ public class AuthController {
         );
 
         return user.map(u -> {
-            String token = jwtUtils.generateJwtToken(u);
+            String token = jwtService.generateToken(u);
             UserDto userDto = new UserDto(
                     u.getId(),
                     u.getName(),
@@ -80,7 +80,7 @@ public class AuthController {
 
         return user.map(u -> {
             logger.info("Courier login successful: {}", u.getEmail());
-            String token = jwtUtils.generateJwtToken(u);
+            String token = jwtService.generateToken(u);
             UserDto userDto = new UserDto(
                     u.getId(),
                     u.getName(),
@@ -117,7 +117,7 @@ public class AuthController {
 
         return user.map(u -> {
             logger.info("Cafe login successful: {}", u.getEmail());
-            String token = jwtUtils.generateJwtToken(u);
+            String token = jwtService.generateToken(u);
 
             Optional<Cafe> cafeOpt = authService.findCafeByUserId(u.getId());
             if (cafeOpt.isEmpty()) {

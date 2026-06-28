@@ -5,7 +5,7 @@ import com.example.cafeapp.dto.OrderRequest;
 import com.example.cafeapp.dto.OrderResponse;
 import com.example.cafeapp.entities.Order;
 import com.example.cafeapp.services.OrderService;
-import com.example.cafeapp.utils.JwtUtils;
+import com.example.cafeapp.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<?> createOrder(
@@ -28,7 +28,7 @@ public class OrderController {
             @RequestBody OrderRequest orderRequest) {
 
         String jwt = token.replace("Bearer ", "");
-        String email = jwtUtils.getUserNameFromJwtToken(jwt);
+        String email = jwtService.extractUsername(jwt);
 
         orderService.processOrder(orderRequest, email);
 
@@ -74,7 +74,7 @@ public class OrderController {
     ) {
         try {
             String jwtToken = token.replace("Bearer ", "");
-            String courierEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+            String courierEmail = jwtService.extractUsername(jwtToken);
 
             orderService.acceptOrderByCourier(id, courierEmail);
             return ResponseEntity.ok("Order accepted by courier");
@@ -114,7 +114,7 @@ public class OrderController {
             @RequestHeader("Authorization") String token) {
 
         String jwtToken = token.replace("Bearer ", "");
-        String email = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        String email = jwtService.extractUsername(jwtToken);
 
         List<Order> orders = orderService.getOrdersForCourier();
 
@@ -143,7 +143,7 @@ public class OrderController {
             @RequestHeader("Authorization") String token) {
 
         String jwtToken = token.replace("Bearer ", "");
-        String email = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        String email = jwtService.extractUsername(jwtToken);
 
         List<Order> orders = orderService.getOrdersByUserEmail(email);
 

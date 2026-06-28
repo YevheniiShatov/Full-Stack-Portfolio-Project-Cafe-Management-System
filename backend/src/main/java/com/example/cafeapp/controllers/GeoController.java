@@ -1,6 +1,7 @@
 package com.example.cafeapp.controllers;
 
 import com.example.cafeapp.entities.Cafe;
+import com.example.cafeapp.entities.District;
 import com.example.cafeapp.repositories.DistrictRepository;
 import com.example.cafeapp.services.GeoService;
 import org.locationtech.jts.geom.Coordinate;
@@ -44,22 +45,27 @@ public class GeoController {
 
         log.info("→ Address geocoded: lat={}, lon={}", lat, lon);
 
-        List<Cafe> cafes = geoService.findCafesByLocation(lon, lat);
+        List<District> districts = geoService.findDistrictsByLocation(lon, lat);
 
-        if (cafes.isEmpty()) {
+        if (districts.isEmpty()) {
             return ResponseEntity.status(404).body("No cafes found for this address");
         }
 
-        // convert list of cafes to DTO/Map for response
-        List<Map<String, Object>> response = new ArrayList<>();
-        for (Cafe cafe : cafes) {
+        // group by cafe and include the delivery price of the matched zone
+        Map<Long, Map<String, Object>> byCafe = new LinkedHashMap<>();
+        for (District d : districts) {
+            Cafe cafe = d.getCafe();
+            if (cafe == null || byCafe.containsKey(cafe.getId())) {
+                continue;
+            }
             Map<String, Object> cafeMap = new HashMap<>();
             cafeMap.put("id", cafe.getId());
             cafeMap.put("name", cafe.getName());
             cafeMap.put("ownerEmail", cafe.getUser().getEmail());
-            response.add(cafeMap);
+            cafeMap.put("deliveryPrice", d.getDeliveryPrice());
+            byCafe.put(cafe.getId(), cafeMap);
         }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ArrayList<>(byCafe.values()));
     }
 }

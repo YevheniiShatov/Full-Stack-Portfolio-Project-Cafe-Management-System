@@ -22,6 +22,8 @@ const ClientOrder = () => {
     );
 
     const cartTotal = selectedItems.reduce((total, item) => total + Number(item.price || 0) * Number(item.quantity || 0), 0);
+    const deliveryPrice = Number(selectedCafe?.deliveryPrice ?? 0);
+    const orderTotal = cartTotal + deliveryPrice;
 
     const isValidPhone = (phone) => /^\d+$/.test(phone);
 
@@ -212,7 +214,7 @@ const ClientOrder = () => {
                                     <p className="list-note" style={{ marginBottom: 0 }}>{cafe.email}</p>
                                 </div>
                                 <div className="badge-row">
-                                    <span className="surface-badge">District: {cafe.district || '—'}</span>
+                                    <span className="surface-badge">Delivery: ${Number(cafe.deliveryPrice ?? 0).toFixed(2)}</span>
                                     <span className="surface-badge">ID: {cafe.id}</span>
                                 </div>
                             </button>
@@ -334,8 +336,13 @@ const ClientOrder = () => {
                     )}
 
                     <div className="summary-total">
+                        <span>Delivery</span>
+                        <span>${deliveryPrice.toFixed(2)}</span>
+                    </div>
+
+                    <div className="summary-total">
                         <span>Total</span>
-                        <span>${cartTotal.toFixed(2)}</span>
+                        <span>${orderTotal.toFixed(2)}</span>
                     </div>
                 </div>
 
